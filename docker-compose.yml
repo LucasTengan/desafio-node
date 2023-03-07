@@ -1,0 +1,43 @@
+version: '3.7'
+
+services:
+  nginx:
+    build: 
+      context: ./nginx
+    restart: always
+    container_name: nginx
+    networks:
+      - desafio-node
+    ports:
+      - "8080:80"
+    depends_on:
+      - nodeapp
+
+  nodeapp:
+    build: 
+      context: ./node
+    container_name: app
+    restart: always
+    networks:
+      - desafio-node
+    depends_on:
+      - mysqldb
+  
+  mysqldb:
+    build: 
+      context: ./mysql
+    networks:
+      - desafio-node
+    container_name: db
+    restart: always
+    tty: true
+    volumes: 
+      - ./mysql/vol:/var/lib/mysql
+    environment: 
+      - MYSQL_DATABASE=desafiodb
+      - MYSQL_ROOT_PASSWORD=root
+
+  
+networks:
+  desafio-node:
+    driver: bridge
